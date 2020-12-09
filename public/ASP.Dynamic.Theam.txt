@@ -1,0 +1,104 @@
+There are 3 different options to apply themes to our website:
+
+Setting the theme at the page level: the Theme attribute is added to the page 
+directive of the page.
+
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Default.aspx.cs" 
+Inherits="Default" Theme="Theme1"%>
+ 
+Setting the theme at the site level: to set the theme for the entire website 
+you can set the theme in the web.config of the website. 
+
+Open the web.config file and locate the <pages> element and add the 
+theme attribute to it:
+
+<pages theme="Theme1">
+....
+....
+</pages>
+
+Create new Website project - Empty - ASP.Net 4.7.2
+
+Setting the theme programmatically at runtime: here the theme is set 
+at runtime through coding. It should be applied earlier in the page's 
+life cycle ie. Page_PreInit event should be handled for setting the theme. 
+
+The better option is to apply this to the Base page class of the site as every 
+page in the site inherits from this class.
+
+Page.Theme = Theme1;
+----------------------------------------------------------
+
+Solution Explorer -> Right click -> Add ASP.NET folder -> Themes.
+
+A new folder App_Themes is added to the Solution Explorer and a new folder 
+Theme1 is added inside it.
+ 
+Theme1 -> Right click -> Add new item -> Stylesheet -> name it as Theme1.css
+ 
+Inside Theme1.css
+
+body
+{
+      background-color:Red;
+}
+ 
+Again add a new file.
+
+App_Themes -> Right click -> Add ASP.NET folder -> Themes
+
+A new folder Themes2 is created.
+ 
+Themes2 -> Right click -> Add new item -> Stylesheet -> name it as Theme2.css
+ 
+Create an Images folder inside Theme2 and add a picture file pic1.jpg inside this.
+File Theme2.css contains –
+
+body
+{
+      background-color:blue
+}
+ 
+Now create a default.aspx as follows. Add a heading and a list box having AutoPostBack to True.
+
+<body>
+    <form id="form1" runat="server">
+    <div>
+    <h3>Select your page Theme : </h3>
+        <asp:ListBox ID="ListBox1" runat="server" AutoPostBack="True" 
+		Height="41px" onselectedindexchanged= "ListBox1_SelectedIndexChanged" 
+		Width="175px">
+                <asp:ListItem>Theme1</asp:ListItem>
+                <asp:ListItem>Theme2</asp:ListItem>
+            </asp:ListBox>
+            <br />
+      </div>
+    </form>
+</body>
+ 
+Inside the default.aspx.cs file a static variable themeValue is defined which saves the value of current theme. In the Page_PreInit event of the page, selected theme from the ListBox is applied to the page and inside the constrctor of the page this PreInit event is provided a EventHandler.
+
+public partial class default : System.Web.UI.Page
+{
+  static string themeValue;
+
+  public ThemeTest()
+  {
+    this.PreInit+=new EventHandler(Page_PreInit);
+  }
+
+  private void Page_PreInit(object sender, EventArgs e)
+  {
+    Page.Theme = themeValue;
+  }
+
+  protected void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
+  {
+    themeValue = ListBox1.SelectedItem.Value;
+    Response.Redirect(Request.Url.ToString());
+  }
+}
+ 
+Now run the page. When we select the Theme from the ListBox, 
+immediately the page is automatically 
+applied with the theme.
